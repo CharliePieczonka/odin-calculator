@@ -1,5 +1,5 @@
-let num1 = "";
-let num2 = "";
+let number1 = "";
+let number2 = "";
 let op = "";
 let chain = false;
 
@@ -15,25 +15,29 @@ numbers.forEach((number) => {
             return;
         }
 
+        if(display.value.includes(".") && number.textContent == ".") {
+            return;
+        }
+
         if(op == "") {
             // chain is set when the calc hasn't been cleared from the previous operation
             // if numbers are typed after the answer is displayed, set num1 and set chain false
             if(chain) {
-                num1 = number.textContent;
-                display.value = num1;
+                number1 = number.textContent;
+                display.value = number1;
                 chain = false;
             }
-            else {
+            else if(number1.length < 11) {
                 // if operator is blank, add the digit into the display space for num1
-                num1 += number.textContent;
-                display.value = num1;
+                number1 += number.textContent;
+                display.value = number1;
             }
             
         }
-        else {
+        else if (number2.length < 11) {
             // if the operator is present, add the digit to num2
-            num2 += number.textContent;
-            display.value = num2;
+            number2 += number.textContent;
+            display.value = number2;
         }
         
     });
@@ -42,8 +46,8 @@ numbers.forEach((number) => {
 operators.forEach((operator) => {
     operator.addEventListener("click", () => {
         // if the user hits the next operator before equals then perform the calculation
-        if(op != "" && num2 != "") {
-            equate();
+        if(op != "" && number2 != "") {
+            operate(op, number1, number2);
         }
 
         op = operator.textContent;
@@ -51,13 +55,13 @@ operators.forEach((operator) => {
 });
 
 equals.addEventListener("click", () => {
-    equate();
+    operate(op, number1, number2);
 });
 
 clear.addEventListener("click", () => {
     display.value = "";
-    num1 = "";
-    num2 = "";
+    number1 = "";
+    number2 = "";
     op = "";
     chain = false;
 });
@@ -79,26 +83,28 @@ function multiply(num1, num2) {
 }
 
 function operate(operator, num1, num2) {
-    
+    let ans = "";
+
     if(operator == "" && !isNaN(num1)){
-        return num1;
+        ans = num1;
     }
-
-    switch(operator) {
-        case "+":
-            return add(num1, num2);
-        case "-":
-            return subtract(num1, num2);
-        case "/":
-            return divide(num1, num2);
-        case "x": 
-            return multiply(num1, num2);
+    else {
+        switch(operator) {
+            case "+":
+                ans = add(num1, num2);
+                break;
+            case "-":
+                ans = subtract(num1, num2);
+                break;
+            case "/":
+                ans = divide(num1, num2);
+                break;
+            case "x": 
+                ans = multiply(num1, num2);
+                break;
+        }
     }
-}
-
-function equate() {
-    let ans = operate(op, parseFloat(num1),  parseFloat(num2));
-
+    
     if(isNaN(ans)) {
         display.value = "Error";
     }
@@ -106,8 +112,8 @@ function equate() {
         ans = +ans.toFixed(10); //round to 10 decimals, + removes trailing 0s
         ans = ans.toString().slice(0, 11); // limit entire number to 11 characters to fit display
         display.value = ans;
-        num1 = ans;
-        num2 = "";
+        number1 = ans;
+        number2 = "";
         op = "";
         chain = true;
     }
