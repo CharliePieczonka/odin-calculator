@@ -39,7 +39,10 @@ numbers.forEach((number) => {
             number2 += number.textContent;
             display.value = number2;
         }
-        
+
+        // there was an issue if you clicked clear and then typed the next equation
+        // hitting enter would trigger the clear button instead of doing "equals"
+        document.activeElement.blur(); 
     });
 });
 
@@ -66,6 +69,30 @@ clear.addEventListener("click", () => {
     chain = false;
 });
 
+// keyboard support
+document.addEventListener("keydown", (event) => {
+    if(!isNaN(event.key) || event.key == "+" || event.key == "=" || event.key == "-" || event.key == "/" 
+    || event.key == "x" || event.key == "*" || event.key == "Enter" || event.key == "c") {
+        
+        let key = event.key;
+        if(event.key == "Enter") {
+            key = "=";
+        }
+
+        if (event.key == "*") {
+            key = "x";
+        }
+
+        if (event.key == "c") {
+            key = "C";
+        }
+
+        let buttons = [...document.querySelectorAll("button")];
+        let button = buttons.find(button => button.textContent == key);
+        button.click();
+    }
+});
+
 function add(num1, num2) {
     return num1 + num2;
 }
@@ -84,6 +111,8 @@ function multiply(num1, num2) {
 
 function operate(operator, num1, num2) {
     let ans = "";
+    num1 = parseFloat(num1);
+    num2 = parseFloat(num2);
 
     if(operator == "" && !isNaN(num1)){
         ans = num1;
